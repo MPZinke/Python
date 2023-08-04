@@ -15,10 +15,8 @@ __author__ = "MPZinke"
 
 
 from flask import request
-import os
 import re
 from typing import Dict, Optional, TypeVar
-from werkzeug.exceptions import Forbidden, Unauthorized
 
 
 HTTP_METHOD = str
@@ -61,19 +59,6 @@ class Route:
 				kwargs[list(params.keys())[list(params.values()).index(type)]] = value
 
 		return self._methods[request.method](**kwargs)
-
-
-	def unauthorized(self) -> bool:
-		"""
-		TODO: Make so passed as a function to the route/server
-		"""
-		AUTHORIZED, UNAUTHORIZED = False, True
-
-		token: str = os.getenv("SMARTCURTAIN_API_TOKEN")
-		if(request.headers.get("Authorization") == f"Bearer {token}"):
-			return AUTHORIZED
-
-		return UNAUTHORIZED
 
 
 	# ————————————————————————————————————————— ROUTES::CALLBACK  VALIDATION ————————————————————————————————————————— #
