@@ -64,6 +64,10 @@ class Server:
 		self._app.run(host=self._host, port=self._port)
 
 
+	def __iter__(self) -> list[str]:
+		yield from {endpoint: doc_string for route in self._routes for endpoint, doc_string in dict(route).items()}.items()
+
+
 	# ——————————————————————————————————————————————— REQUEST HANDLING ——————————————————————————————————————————————— #
 
 	def _after_request(self, response):
@@ -102,6 +106,10 @@ class Server:
 
 	@staticmethod
 	def bearer_auth(*authorization_args: list) -> callable:
+		"""
+		SUMMARY: Function used for no authorization. Can be called statically or dynamically.
+		PARAMS:  Takes either the bearer token or the object calling it and the bearer token.
+		"""
 		use_message = "Use either statically with `Server.bearer_auth(auth: str)`" \
 		  + " or dynamically with `<server_object>.bearer_auth(auth: str)`"
 		if(len(authorization_args) == 0):
@@ -134,6 +142,9 @@ class Server:
 
 	@staticmethod
 	def no_auth(*_: list) -> True:
+		"""
+		Function used for no authorization. Can be called statically or dynamically.
+		"""
 		return True
 
 

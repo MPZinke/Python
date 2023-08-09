@@ -61,6 +61,10 @@ class Route:
 		return self._methods[request.method](**kwargs)
 
 
+	def __iter__(self) -> Dict[str, str]:
+		yield from {f"{method} {self._url}": callback.__doc__ for method, callback in self._methods.items()}.items()
+
+
 	# ————————————————————————————————————————— ROUTES::CALLBACK  VALIDATION ————————————————————————————————————————— #
 
 	@staticmethod
