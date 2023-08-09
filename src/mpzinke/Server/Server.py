@@ -51,6 +51,9 @@ class Server:
 		self._routes: list[Route] = []
 		self._version: str = version
 
+		self.jinja_env = self._app.jinja_env
+
+
 	# ———————————————————————————————————————————————————— THREAD ———————————————————————————————————————————————————— #
 
 	def __call__(self) -> None:
