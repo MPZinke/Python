@@ -5,30 +5,28 @@ on:
     types: [published]
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
       - name: checkout
         uses: actions/checkout@v2
 
-      - name: Deploy Test
-        id: deploy-test
+      - name: Build
+        id: build
         run: |
           python3 -m pip install --upgrade build
           python3 -m pip install --upgrade twine
           python3 -m pip install --upgrade toml-cli
           toml set --toml-path pyproject.toml project.version ${{ github.event.release.tag_name }}
           python3 -m build
+
+      - name: Deploy Test
+        id: deploy-test
+        run: |
           python3 -m twine upload --username __token__ --password ${{ secrets.PYPI_TEST }} --repository testpypi dist/*
-          # python3 -m pip install --index-url https://test.pypi.org/simple/ --no-deps mpzinke
 
       - name: Deploy Prod
         id: deploy-prod
         run: |
-          python3 -m pip install --upgrade build
-          python3 -m pip install --upgrade twine
-          python3 -m pip install --upgrade toml-cli
-          toml set --toml-path pyproject.toml project.version ${{ github.event.release.tag_name }}
-          python3 -m build
           python3 -m twine upload --username __token__ --password ${{ secrets.PYPI_PROD }} --repository pypi dist/*
