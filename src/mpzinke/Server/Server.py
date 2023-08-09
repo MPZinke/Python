@@ -35,9 +35,9 @@ class Server:
 
 
 	def __init__(self, *, authorization: Optional[callable]=None, handle_error: Optional[callable]=None,
-	  host: str="0.0.0.0", name: str="Flask App", port: int=8080, version: str="1.0.0"
+	  host: str="0.0.0.0", name: str="Flask App", port: int=8080, version: str="1.0.0", **kwargs: dict
 	):
-		self._app = Flask(name)
+		self._app = Flask(name, **kwargs)
 
 		self._cors = CORS(self._app)
 		self._app.config['CORS_HEADERS'] = 'Content-Type'
