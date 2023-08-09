@@ -70,7 +70,6 @@ class Server:
 		"""
 		FROM: https://stackoverflow.com/a/30717205
 		"""
-		response.headers["Content-Type"] = "application/json"
 		response.headers["Version"] = self._version
 		return response
 
