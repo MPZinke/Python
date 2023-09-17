@@ -37,6 +37,16 @@ class Server:
 	def __init__(self, *, authorization: Optional[callable]=None, handle_error: Optional[callable]=None,
 	  host: str="0.0.0.0", name: str="Flask App", port: int=8080, version: str="1.0.0", **kwargs: dict
 	):
+		"""
+		PARAMS:
+			`authorization: Optional[callable]=None`: An optional callback used to authorize incoming requests.
+			`handle_error: Optional[callable]=None`:  An optional callback used to handle error responses on requests.
+			`host: str="0.0.0.0"`: The host on which server shall run.
+			`name: str="Flask App"`: The name of the app.
+			`port: int=8080`: The port on which the server shall run.
+			`version: str="1.0.0"`: The version of the app.
+			`**kwargs: dict`: Any additional args that will be passed to the Flask server.
+		"""
 		self._app = Flask(name, **kwargs)
 
 		self._cors = CORS(self._app)
@@ -56,12 +66,18 @@ class Server:
 
 	# ———————————————————————————————————————————————————— THREAD ———————————————————————————————————————————————————— #
 
-	def __call__(self) -> None:
+	def __call__(self, *, host: Optional[str]=None, port: Optional[int]=None) -> None:
 		"""
 		SUMMARY: Adds routes to server & class, and starts the server instance.
 		DETAILS: Sets routes using hardcoded routes, functions & HTTP request methods. Calls the Flask::run method.
 		"""
-		self._app.run(host=self._host, port=self._port)
+		if(host is None):
+			host = self._host
+
+		if(port is None):
+			port = self._port
+
+		self._app.run(host=host, port=port)
 
 
 	def __iter__(self) -> list[str]:
