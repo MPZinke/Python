@@ -188,7 +188,7 @@ class Server:
 			method_mappings["GET"] = GET
 
 		authorization = authorization or self._authorization
-		self +=  Route(self, url, method_mappings, additional_args=additional_args, authorization=authorization)
+		self += Route(url, self, additional_args=additional_args, authorization=authorization, **method_mappings)
 
 
 	def __iadd__(self, route: Route) -> Server:

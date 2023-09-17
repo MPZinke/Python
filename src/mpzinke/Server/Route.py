@@ -30,8 +30,8 @@ Server = TypeVar("Server")
 
 
 class Route:
-	def __init__(self, server: Server, url: URL, method_mappings: HTTP_METHOD_MAPPING, *,
-	  additional_args: Dict[type, any]=None, authorization: Optional[callable]=None
+	def __init__(self, url: URL, server: Optional[Server]=None, *, additional_args: Dict[type, any]=None,
+		authorization: Optional[callable]=None, **method_mappings: HTTP_METHOD_MAPPING
 	):
 		self._additional_args: Dict[type, any] = additional_args or {}
 		self._authorization: Optional[callable] = authorization
