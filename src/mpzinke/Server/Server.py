@@ -25,6 +25,9 @@ from werkzeug.exceptions import Forbidden, HTTPException, Unauthorized
 from .Route import Route, HTTP_METHOD, URL
 
 
+Server = TypeVar("Server")
+
+
 class Server:
 	"""
 	Flask API Server.
@@ -185,10 +188,21 @@ class Server:
 			method_mappings["GET"] = GET
 
 		authorization = authorization or self._authorization
-		route = Route(self, url, method_mappings, additional_args=additional_args, authorization=authorization)
+		self +=  Route(self, url, method_mappings, additional_args=additional_args, authorization=authorization)
+
+
+	def __iadd__(self, route: Route) -> Server:
+		if(not isinstance(route, Route)):
+			raise TypeError(f"Cannot add an object of type '{type(route)}' to Server")
+
+		route._server = self
 		self._routes.append(route)
 
+		url = route._url
+		method_mappings = route._methods
 		# Set URLs for both urls that do and do not end with '/', with the exception of the root URL
 		# Get the url without and with the ending '/', then remove the blank urls (ie if the root url is provided)
 		urls = set(url for url in [url.rstrip("/"), (f"{url}/" if(url[-1] != "/") else url)] if(url))
 		[self._app.add_url_rule(url, url, route, methods=list(method_mappings)) for url in urls]
+
+		return self

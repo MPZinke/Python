@@ -36,7 +36,7 @@ class Route:
 		self._additional_args: Dict[type, any] = additional_args or {}
 		self._authorization: Optional[callable] = authorization
 		self._methods: HTTP_METHOD_MAPPING = {method.upper(): callback for method, callback in method_mappings.items()}
-		self._server: Optional[callable] = server
+		self._server: Optional[Server] = server
 		self._url: URL = url
 
 		self._validate_HTTP_methods()
