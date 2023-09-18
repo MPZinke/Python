@@ -14,7 +14,9 @@ __author__ = "MPZinke"
 ########################################################################################################################
 
 
+import asyncio
 from flask import request
+from inspect import iscoroutinefunction
 import re
 from typing import Dict, Optional, TypeVar
 
@@ -58,7 +60,11 @@ class Route:
 			if(type in (params := self._methods[request.method].__annotations__).values()):
 				kwargs[list(params.keys())[list(params.values()).index(type)]] = value
 
-		return self._methods[request.method](**kwargs)
+		callback = self._methods[request.method]
+		if(iscoroutinefunction(callback)):
+			return asyncio.run(callback(**kwargs))
+
+		return callback(**kwargs)
 
 
 	def __iter__(self) -> Dict[str, str]:
@@ -149,6 +155,17 @@ class Route:
 		DETAILS: 
 		RETURNS: 
 		"""
+		# Ensure all set methods have a callback (as opposed to a different type being passed)
+		for http_method, callback in self._methods.items():
+			if(not hasattr(callback, '__call__')):
+				url = self._url
+				message = f"""'{http_method}' arg must be of type 'callable', not '{type(callback)}' for URL '{url}'"""
+				raise Exception(message)
+
+		callbacks = list(self._methods.values())
+		if(any(iscoroutinefunction(callback) != iscoroutinefunction(callbacks[0]) for callback in callbacks)):
+			raise Exception("Callbacks must be either all synchronous or all asynchronous.")
+
 		# Ensure all set methods have a callback (as opposed to a different type being passed)
 		for http_method, callback in self._methods.items():
 			if(not hasattr(callback, '__call__')):
