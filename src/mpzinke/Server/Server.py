@@ -38,7 +38,7 @@ class Server:
 
 
 	def __init__(self, *, authorization: Optional[callable]=None, handle_error: Optional[callable]=None,
-	  host: str="0.0.0.0", name: str="Flask App", port: int=8080, version: str="1.0.0", **kwargs: dict
+		host: str="0.0.0.0", name: str="Flask App", port: int=8080, version: str="1.0.0", **kwargs: dict
 	):
 		"""
 		PARAMS:
