@@ -62,8 +62,9 @@ class Route:
 
 
 	def __iter__(self) -> Dict[str, str]:
+		url = self._url
 		yield from {
-			f"{method} {self._url}": callback.__doc__.trim() for method, callback in self._methods.items()
+			f"{method} {url}": (function.__doc__ or "").strip() for method, function in self._methods.items()
 		}.items()
 
 
