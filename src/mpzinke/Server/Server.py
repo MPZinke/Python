@@ -205,10 +205,9 @@ class Server:
 		route._server = self
 		self._routes.append(route)
 
-		url = route._url
 		# Set URLs for both urls that do and do not end with '/', with the exception of the root URL
 		# Get the url without and with the ending '/', then remove the blank urls (ie if the root url is provided)
-		urls = set(filter(None, [url.rstrip("/"), f"{url:/<1}"]))
+		urls = set(filter(None, [route._url.rstrip("/"), f"{route._url:/<1}"]))
 		[self._app.add_url_rule(url, url, route, methods=list(route._methods)) for url in urls]
 
 		return self
