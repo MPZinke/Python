@@ -22,7 +22,7 @@ from typing import Dict, Optional, TypeVar
 from werkzeug.exceptions import Forbidden, HTTPException, Unauthorized
 
 
-from .Route import Route, HTTP_METHOD, URL
+from .Route import Route, ArgMapping, HTTPMethod, URL
 
 
 Server = TypeVar("Server")
@@ -37,11 +37,13 @@ class Server:
 	EXCEPTIONS = {401: Unauthorized, 403: Forbidden}
 
 
-	def __init__(self, *, authorization: Optional[callable]=None, handle_error: Optional[callable]=None,
-		host: str="0.0.0.0", name: str="Flask App", port: int=8080, version: str="1.0.0", **kwargs: dict
+	def __init__(self, *, authorization: Optional[callable]=None, additional_args: Optional[ArgMapping]=None,
+		handle_error: Optional[callable]=None, host: str="0.0.0.0", name: str="Flask App", port: int=8080,
+		version: str="1.0.0", **kwargs: dict
 	):
 		"""
 		PARAMS:
+			`additional_args: Optional[ArgMapping]=None`: An optional dictionary of args to pass to HTTPCallbacks.
 			`authorization: Optional[callable]=None`: An optional callback used to authorize incoming requests.
 			`handle_error: Optional[callable]=None`:  An optional callback used to handle error responses on requests.
 			`host: str="0.0.0.0"`: The host on which server shall run.
@@ -57,6 +59,7 @@ class Server:
 		self._app.register_error_handler(Exception, self._handle_error)
 		self._app.after_request(self._after_request)
 
+		self._additional_args: Optional[ArgMapping] = additional_args
 		self._authorization: callable = authorization
 		self._handle_error = handle_error or self._handle_error
 		self._host: str = host
@@ -170,19 +173,23 @@ class Server:
 	# ———————————————————————————————————————————————————— ROUTES ———————————————————————————————————————————————————— #
 	# ———————————————————————————————————————————————————————————————————————————————————————————————————————————————— #
 
-	def route(self, url: URL, GET: callable=None, *, additional_args: Dict[type, any]=None,
-	  authorization: Optional[callable]=None, **method_mappings: Dict[HTTP_METHOD, callable]
+	def route(self, url: URL, GET: callable=None, *, additional_args: Optional[ArgMapping]=None,
+	  authorization: Optional[callable]=None, **method_mappings: Dict[HTTPMethod, callable]
 	) -> None:
 		"""
 		SUMMARY: 
 		PARAMS:  
 		DETAILS: 
 		"""
-		additional_args = additional_args or {}
+		# Set the properly supplied args by precedence.
+		for args in [additional_args, self._additional_args, {}]:
+			if((additional_args := args) is not None):
+				break
+
 		method_mappings = {method.upper(): function for method, function in method_mappings.items()}
 
 		if(GET is not None):  # Use the GET argument
-			if("GET" in [key.upper() for key in method_mappings]):  # Ensure 'GET' is not doubly supplied
+			if("GET" in method_mappings):  # Ensure 'GET' is not doubly supplied
 				raise Exception(f"Ambiguous supplying of argument 'GET' and keyword argument 'GET' for URL '{url}'")
 
 			method_mappings["GET"] = GET

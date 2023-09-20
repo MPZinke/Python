@@ -21,9 +21,10 @@ import re
 from typing import Dict, Optional, TypeVar
 
 
-HTTP_METHOD = str
-HTTP_CALLBACK = str
-HTTP_METHOD_MAPPING = Dict[HTTP_METHOD, HTTP_CALLBACK]
+ArgMapping = Dict[type, any]
+HTTPMethod = str
+HTTPCallback = callable
+HTTPMethodMapping = Dict[HTTPMethod, HTTPCallback]
 URL = str
 
 
@@ -32,12 +33,12 @@ Server = TypeVar("Server")
 
 
 class Route:
-	def __init__(self, url: URL, server: Optional[Server]=None, *, additional_args: Dict[type, any]=None,
-		authorization: Optional[callable]=None, **method_mappings: HTTP_METHOD_MAPPING
+	def __init__(self, url: URL, server: Optional[Server]=None, *, additional_args: Optional[ArgMapping]=None,
+		authorization: Optional[callable]=None, **method_mappings: HTTPMethodMapping
 	):
 		self._additional_args: Dict[type, any] = additional_args or {}
 		self._authorization: Optional[callable] = authorization
-		self._methods: HTTP_METHOD_MAPPING = {method.upper(): callback for method, callback in method_mappings.items()}
+		self._methods: HTTPMethodMapping = {method.upper(): callback for method, callback in method_mappings.items()}
 		self._server: Optional[Server] = server
 		self._url: URL = url
 
