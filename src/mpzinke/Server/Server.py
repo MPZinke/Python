@@ -59,15 +59,13 @@ class Server:
 		self._app.register_error_handler(Exception, self._handle_error)
 		self._app.after_request(self._after_request)
 
-		self._additional_args: Optional[ArgMapping] = additional_args
+		self._additional_args: Optional[ArgMapping] = {Server: self, **(additional_args or {})}
 		self._authorization: callable = authorization
 		self._handle_error = handle_error or self._handle_error
 		self._host: str = host
 		self._port: int = port
 		self._routes: list[Route] = []
 		self._version: str = version
-
-		self.jinja_env = self._app.jinja_env
 
 
 	# ———————————————————————————————————————————————————— THREAD ———————————————————————————————————————————————————— #
@@ -87,7 +85,9 @@ class Server:
 
 
 	def __iter__(self) -> list[str]:
-		yield from {endpoint: doc_string for route in self._routes for endpoint, doc_string in dict(route).items()}.items()
+		yield from {
+			endpoint: doc_string for route in self._routes for endpoint, doc_string in dict(route).items()
+		}.items()
 
 
 	# ——————————————————————————————————————————————— REQUEST HANDLING ——————————————————————————————————————————————— #
@@ -132,8 +132,8 @@ class Server:
 		SUMMARY: Function used for no authorization. Can be called statically or dynamically.
 		PARAMS:  Takes either the bearer token or the object calling it and the bearer token.
 		"""
-		use_message = "Use either statically with `Server.bearer_auth(auth: str)`" \
-		  + " or dynamically with `<server_object>.bearer_auth(auth: str)`"
+		use_message = ("Use either statically with `Server.bearer_auth(auth: str)`"
+			" or dynamically with `<server_object>.bearer_auth(auth: str)`")
 		if(len(authorization_args) == 0):
 			raise TypeError(f"An authorization string must be passed to `bearer_auth`\n{use_message}")
 
@@ -198,7 +198,7 @@ class Server:
 		self += Route(url, self, additional_args=additional_args, authorization=authorization, **method_mappings)
 
 
-	def __iadd__(self, route: Route) -> Server:
+	def __iadd__(self: Server, route: Route) -> Server:
 		if(not isinstance(route, Route)):
 			raise TypeError(f"Cannot add an object of type '{type(route)}' to Server")
 
@@ -206,10 +206,9 @@ class Server:
 		self._routes.append(route)
 
 		url = route._url
-		method_mappings = route._methods
 		# Set URLs for both urls that do and do not end with '/', with the exception of the root URL
 		# Get the url without and with the ending '/', then remove the blank urls (ie if the root url is provided)
-		urls = set(url for url in [url.rstrip("/"), (f"{url}/" if(url[-1] != "/") else url)] if(url))
-		[self._app.add_url_rule(url, url, route, methods=list(method_mappings)) for url in urls]
+		urls = set(filter(None, [url.rstrip("/"), f"{url:/<1}"]))
+		[self._app.add_url_rule(url, url, route, methods=list(route._methods)) for url in urls]
 
 		return self

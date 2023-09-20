@@ -169,7 +169,7 @@ class Route:
 
 		# Ensure all set methods have a callback (as opposed to a different type being passed)
 		for http_method, callback in self._methods.items():
-			if(not hasattr(callback, '__call__')):
+			if(not callable(callback)):
 				url = self._url
 				message = f"""'{http_method}' arg must be of type 'callable', not '{type(callback)}' for URL '{url}'"""
 				raise Exception(message)
