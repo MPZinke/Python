@@ -38,8 +38,8 @@ class Server:
 
 
 	def __init__(self, *, authorization: Optional[callable]=None, additional_args: Optional[ArgMapping]=None,
-		handle_error: Optional[callable]=None, host: str="0.0.0.0", name: str="Flask App", port: int=8080,
-		version: str="1.0.0", **kwargs: dict
+		debug: bool=False, handle_error: Optional[callable]=None, host: str="0.0.0.0", name: str="Flask App",
+		port: int=8080, version: str="1.0.0", **kwargs: dict
 	):
 		"""
 		PARAMS:
@@ -61,6 +61,7 @@ class Server:
 
 		self._additional_args: Optional[ArgMapping] = {Server: self, **(additional_args or {})}
 		self._authorization: callable = authorization
+		self._debug: bool = debug
 		self._handle_error = handle_error or self._handle_error
 		self._host: str = host
 		self._port: int = port
@@ -70,18 +71,21 @@ class Server:
 
 	# ———————————————————————————————————————————————————— THREAD ———————————————————————————————————————————————————— #
 
-	def __call__(self, *, host: Optional[str]=None, port: Optional[int]=None) -> None:
+	def __call__(self, *, debug: bool=False, host: Optional[str]=None, port: Optional[int]=None) -> None:
 		"""
 		SUMMARY: Adds routes to server & class, and starts the server instance.
 		DETAILS: Sets routes using hardcoded routes, functions & HTTP request methods. Calls the Flask::run method.
 		"""
+		if(debug is None):
+			debug = self._debug
+
 		if(host is None):
 			host = self._host
 
 		if(port is None):
 			port = self._port
 
-		self._app.run(host=host, port=port)
+		self._app.run(debug=debug, host=host, port=port)
 
 
 	def __iter__(self) -> list[str]:
