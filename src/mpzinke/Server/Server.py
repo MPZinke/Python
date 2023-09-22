@@ -53,6 +53,7 @@ class Server:
 			`**kwargs: dict`: Any additional args that will be passed to the Flask server.
 		"""
 		self._app = Flask(name, **kwargs)
+		self._app.debug = debug
 
 		self._cors = CORS(self._app)
 		self._app.config['CORS_HEADERS'] = 'Content-Type'
@@ -71,13 +72,13 @@ class Server:
 
 	# ———————————————————————————————————————————————————— THREAD ———————————————————————————————————————————————————— #
 
-	def __call__(self, *, debug: bool=False, host: Optional[str]=None, port: Optional[int]=None) -> None:
+	def __call__(self, *, debug: Optional[bool]=None, host: Optional[str]=None, port: Optional[int]=None) -> None:
 		"""
 		SUMMARY: Adds routes to server & class, and starts the server instance.
 		DETAILS: Sets routes using hardcoded routes, functions & HTTP request methods. Calls the Flask::run method.
 		"""
 		if(debug is None):
-			debug = self._debug
+			debug = self._app.debug
 
 		if(host is None):
 			host = self._host
