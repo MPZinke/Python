@@ -3,18 +3,19 @@
 import mpzinke
 import types
 import typing
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 
 class Validator:
-	def __init__(self, locals: Dict[str, Any]):
+	def __init__(self, locals: Dict[str, Any], descendent_class: Optional[type]=None):
 		"""
 		
 		"""
 		assert(type(self) is not Validator), "'Validator' must be inheritted"
 		assert(issubclass(type(self), Validator)), f"'{type(self).__name__}' must be of type 'Validator'"
 
-		annotations = type(self).__init__.__annotations__
+		descendent_class = Validator.class_with_Validator_parent(descendent_class or type(self))
+		annotations = descendent_class.__init__.__annotations__
 
 		# Check if any parameter is not supplied in the `locals` values.
 		missing_params: Dict[str, type] = {name: type for name, type in annotations.items() if(name not in locals)}
@@ -41,21 +42,20 @@ class Validator:
 		"""
 		https://stackoverflow.com/questions/49171189/whats-the-correct-way-to-check-if-an-object-is-a-typing-generic
 		"""
-		check_type = Validator.check_type
 		if((origin := typing.get_origin(needed_type)) is types.UnionType or origin is typing.Union):
 			return Validator.check_union_type(value, needed_type)
 
 		elif(isinstance(needed_type, (mpzinke.Generic, types.GenericAlias, typing._GenericAlias))):
 			return Validator.check_generic_type(value, needed_type)
 
-		# int
+		# EG. `int`
 		return isinstance(value, needed_type)
 
 
 	@staticmethod
 	def check_union_type(value: Any, needed_type: type) -> bool:
 		"""
-		EG. `int|str``
+		EG. `int|str`
 		"""
 		return any(Validator.check_type(value, unioned_type) for unioned_type in needed_type.__args__)
 
@@ -79,3 +79,13 @@ class Validator:
 				return False
 
 		return True
+
+
+	@staticmethod
+	def class_with_Validator_parent(class_type: type) -> type:
+		for base in class_type.__bases__:
+			if(base is not None):
+				if(base == Validator):
+					return class_type
+
+				return Validator.class_with_Validator_parent(base)
