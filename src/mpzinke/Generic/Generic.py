@@ -54,7 +54,8 @@ class Generic:
 
 		assert(all(isinstance(arg, type) for arg in __args__)), "All Generic arguments must be a type"
 
-		return type(f"""{cls.__name__}[{", ".join(__args__)}]""" , (cls,), {"__args__": __args__})
+		name = f"""{cls.__name__}[{", ".join(arg.__name__ for arg in __args__)}]"""
+		return type(name, (cls,), {"__args__": __args__})
 
 
 	def get_or_set__args__(self, new__args__: Optional[Any]=None) -> Optional[Any]:
