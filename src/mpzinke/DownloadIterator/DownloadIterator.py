@@ -92,21 +92,3 @@ class DownloadIterator:
 		SUMMARY: Used to override warning format & return only the warning message.
 		"""
 		return str(message)+"\n"
-
-
-
-
-def main():
-	def print_callback(self):
-		if(self._downloaded % 1048576 == 0):
-			print(f"Downloaded {self._downloaded / 1048576} MB")
-
-	response: requests.Response = requests.get("https://speed.hetzner.de/100MB.bin", stream=True, timeout=21)
-
-	iterator = DownloadIterator(response, timeout=300, callback=print_callback)
-	file_bytes = b''.join([chunk for chunk in iterator if chunk])
-	print(f"Downlaoded: {len(file_bytes)}")
-
-
-if __name__ == '__main__':
-	main()

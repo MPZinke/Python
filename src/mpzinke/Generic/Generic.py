@@ -52,7 +52,9 @@ class Generic:
 		if(not isinstance(__args__, tuple)):
 			__args__ = (__args__,)
 
-		return type(cls.__name__, (cls,), {"__args__": __args__})
+		assert(all(isinstance(arg, type) for arg in __args__)), "All Generic arguments must be a type"
+
+		return type(f"""{cls.__name__}[{", ".join(__args__)}]""" , (cls,), {"__args__": __args__})
 
 
 	def get_or_set__args__(self, new__args__: Optional[Any]=None) -> Optional[Any]:
