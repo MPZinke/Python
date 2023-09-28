@@ -77,6 +77,8 @@ class Generic:
 		self._function = function
 		self.__annotations__ = {arg: type for arg, type in function.__annotations__.items() if(arg != "__args__")}
 		self.__name__ = function.__name__
+		args_strings = {f"__args___string[{x}]": __arg__.__name__  for x, __arg__ in enumerate(self.__args__)}
+		self.__doc__ = function.__doc__.format(**args_strings) if(function.__doc__ is not None) else None
 
 
 	def __call__(self, *args: list, **kwargs: dict):
