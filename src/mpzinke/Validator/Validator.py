@@ -26,10 +26,13 @@ class Validator:
 		SUMMARY: Check if any parameter is not supplied in the arguments values.
 		RAISES: KeyError
 		"""
-		missing_params: Dict[str, type] = {name: type for name, type in parameter_types.items() if(name not in argument_types)}
-		if(len(missing_params) != 0):
-			missing_keys_string = ", ".join([f"{name} of type '{type}'" for name, type in missing_params.items()])
-			raise KeyError(f"Missing key(s) for {missing_keys_string}")
+		missing_arguments_strings: list[str] = [] 
+		for name, type in parameter_types.items():
+			if(name not in argument_types):
+				missing_arguments_strings.append(f"'{name}' of type '{type}'")
+
+		if(len(missing_arguments_strings) != 0):
+			raise KeyError(f"""Missing key(s) for {", ".join(missing_arguments_strings)}""")
 
 
 	@staticmethod
@@ -105,4 +108,3 @@ class Validator:
 					return ancestor
 
 		return None
-
