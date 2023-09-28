@@ -74,12 +74,14 @@ class Generic:
 	# ———— WRAPPER ———— #
 
 	def __init__(self, function: callable):
-		self.__args__ = tuple()
 		self._function = function
 		self.__annotations__ = {arg: type for arg, type in function.__annotations__.items() if(arg != "__args__")}
+		self.__args__ = tuple()
+		self.__doc__ = function.__doc__
 		self.__name__ = function.__name__
-		args_strings = {f"__args___string[{x}]": __arg__.__name__  for x, __arg__ in enumerate(self.__args__)}
-		self.__doc__ = function.__doc__.format(**args_strings) if(function.__doc__ is not None) else None
+
+		if(self.__doc__ is not None):
+			self.__doc__.format(__args___names=[__arg__.__name__ for __arg__ in self.__args__])
 
 
 	def __call__(self, *args: list, **kwargs: dict):
