@@ -74,6 +74,7 @@ class Generic:
 	# ———— WRAPPER ———— #
 
 	def __init__(self, function: callable):
+		self.__args__ = tuple()
 		self._function = function
 		self.__annotations__ = {arg: type for arg, type in function.__annotations__.items() if(arg != "__args__")}
 		self.__name__ = function.__name__
