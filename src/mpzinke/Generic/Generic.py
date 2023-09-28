@@ -76,7 +76,6 @@ class Generic:
 	def __init__(self, function: callable):
 		self._function = function
 		self.__annotations__ = {arg: type for arg, type in function.__annotations__.items() if(arg != "__args__")}
-		self.__args__ = tuple()
 		self.__doc__ = function.__doc__
 		self.__name__ = function.__name__
 
@@ -90,9 +89,8 @@ class Generic:
 		if(not isinstance(__args__, tuple)):
 			__args__ = (__args__,)
 
-		self.__args__ = __args__
-
+		typed_function = Generic[__args__](self._function)
 		if(self.__doc__ is not None):
-			self.__doc__.format(__args___names=[__arg__.__name__ for __arg__ in self.__args__])
+			typed_function.__doc__ = self.__doc__.format(__args___names=[__arg__.__name__ for __arg__ in __args__])
 
-		return Generic[__args__](self._function)
+		return typed_function

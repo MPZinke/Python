@@ -29,8 +29,11 @@ def test():
 		kwargs_string = ",".join([f"{key}={value}" for key, value in kwargs.items()])
 		print(f"""called `my_function[{__args__[0].__name__}]({args_string}, {kwargs_string})`""")
 
+	my_function_str = my_function[str]
+	my_function_int = my_function[int]
 
-	my_function[str]("a", "b", key="word")
+	my_function_str("a", "b", key="word")
+	my_function_int("a", "b", key="word")
 
 
 if(__name__ == "__main__"):
