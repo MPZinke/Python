@@ -80,8 +80,6 @@ class Generic:
 		self.__doc__ = function.__doc__
 		self.__name__ = function.__name__
 
-		if(self.__doc__ is not None):
-			self.__doc__.format(__args___names=[__arg__.__name__ for __arg__ in self.__args__])
 
 
 	def __call__(self, *args: list, **kwargs: dict):
@@ -93,4 +91,8 @@ class Generic:
 			__args__ = (__args__,)
 
 		self.__args__ = __args__
+
+		if(self.__doc__ is not None):
+			self.__doc__.format(__args___names=[__arg__.__name__ for __arg__ in self.__args__])
+
 		return self
