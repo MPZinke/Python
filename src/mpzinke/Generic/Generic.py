@@ -75,7 +75,7 @@ class Generic:
 
 	def __init__(self, function: callable):
 		self._function = function
-		self.__annotations__ = function.__annotations__
+		self.__annotations__ = {arg: type for arg, type in function.__annotations__.items() if(arg != "__args__")}
 
 
 	def __call__(self, *args: list, **kwargs: dict):
