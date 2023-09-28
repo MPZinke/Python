@@ -95,4 +95,4 @@ class Generic:
 		if(self.__doc__ is not None):
 			self.__doc__.format(__args___names=[__arg__.__name__ for __arg__ in self.__args__])
 
-		return self
+		return Generic[__args__](self._function)
