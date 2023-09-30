@@ -83,7 +83,7 @@ class Validator:
 		for argument_children in (argument.items() if(isinstance(argument, dict)) else argument):
 			# (1, int), (['1', '1'], list[str])
 			for grandchild, type in zip(argument_children, generics_args):
-				if(any(not Validator.check_argument_type(grandchild, type))):
+				if(not Validator.check_argument_type(grandchild, type)):
 					return False
 
 		return True
