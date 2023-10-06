@@ -5,7 +5,7 @@ __author__ = "MPZinke"
 ########################################################################################################################
 #                                                                                                                      #
 #   created by: MPZinke                                                                                                #
-#   on 2023.07.31                                                                                                      #
+#   on 2023.10.06                                                                                                      #
 #                                                                                                                      #
 #   DESCRIPTION:                                                                                                       #
 #   BUGS:                                                                                                              #
@@ -14,9 +14,11 @@ __author__ = "MPZinke"
 ########################################################################################################################
 
 
-from .DownloadIterator import DownloadIterator
-from .Generic import Generic
-from .IsJSON import is_json
-from .Server import Server
-from .TypeName import type_name
-from .Validator import Validator
+from typing import Any
+
+
+def type_name(value: Any) -> str:
+	"""
+	Gets the succinct string value for the name of the type of a value.
+	"""
+	return type(value).__name__
