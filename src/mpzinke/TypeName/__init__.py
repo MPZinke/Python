@@ -17,7 +17,7 @@ __author__ = "MPZinke"
 from typing import Any
 
 
-def type_name(value: Any) -> str:
+def typename(value: Any) -> str:
 	"""
 	Gets the succinct string value for the name of the type of a value.
 	"""
