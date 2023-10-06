@@ -18,5 +18,5 @@ from .DownloadIterator import DownloadIterator
 from .Generic import Generic
 from .IsJSON import is_json
 from .Server import Server
-from .TypeName import type_name
+from .TypeName import typename
 from .Validator import Validator
