@@ -15,6 +15,7 @@ __author__ = "MPZinke"
 ########################################################################################################################
 
 
+from mpzinke import typename
 import sys
 from typing import Optional
 import threading
@@ -41,6 +42,10 @@ class BaseThread(threading.Thread):
 
 		warnings.formatwarning = warning_message
 
+
+	def __init_subclass__(cls):
+		if(not "__call__" in dir(cls)):
+			raise Exception(f"Class {cls.__name__} requires a '__call__' method to be a child class of BaseThread")
 
 
 	def __enter__(self):
