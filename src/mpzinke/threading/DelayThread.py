@@ -24,11 +24,6 @@ class DelayThread(BaseThread):
 
 
 	def __call__(self) -> None:
-		try:  # make it safe!!!
-			self.sleep(self.time())
-			if(self._is_active):
-				self.action()
-
-		except Exception as error:
-			print("ERROR")
-			print(error)
+		self.sleep(self.time())
+		if(self._is_active):
+			self.action()

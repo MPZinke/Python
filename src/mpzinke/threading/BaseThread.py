@@ -15,6 +15,7 @@ __author__ = "MPZinke"
 ########################################################################################################################
 
 
+import sys
 from typing import Optional
 import threading
 import warnings
@@ -31,16 +32,23 @@ class BaseThread(threading.Thread):
 	def __init__(self, name: str, *, action: callable, time: callable):
 		threading.Thread.__init__(self, name=name, target=self)
 
-		self.action: callable = action;  # operations special to child object
-		self._condition: threading.Condition = threading.Condition();  # allows for sleep/wake feature
-		self._is_active: bool = True;  # used by thread_loop() for maintaining while loop
-		self.time: callable = time;  # function pointer to determine/return the amount of time it should sleep
+		self.action: callable = action  # operations special to child object
+		self._condition: threading.Condition = threading.Condition()  # allows for sleep/wake feature
+		self._is_active: bool = False  # used by thread_loop() for maintaining while loop
+		self.time: callable = time  # function pointer to determine/return the amount of time it should sleep
 
-		warnings.formatwarning = warning_message;
+		self.decorate_call()
+
+		warnings.formatwarning = warning_message
 
 
-	def __call__(self):
-		raise Exception("BaseThread::__call__ must be overridden")
+
+	def __enter__(self):
+		self._is_active = True
+
+
+	def __exit__(self, exc_type, exc_val, exc_tb):
+		self._is_active = False
 
 
 	def __del__(self) -> None:
@@ -48,14 +56,26 @@ class BaseThread(threading.Thread):
 			self.kill()
 
 
+	def decorate_call(self) -> None:
+		__call__copy = type(self).__call__
+		def __call__(self):
+			with self:
+				try:
+					__call__copy(self)
+				except Exception as error:
+					print(error, file=sys.stderr)
+
+		type(self).__call__ = __call__
+
+
 	def kill(self) -> None:
 		"""
 		SUMMARY: Ends a thread.
 		DETAILS: Releases loop, wakes sleeping condition, joins thread with rest of program.
 		"""
-		self._is_active = False;
+		self._is_active = False
 		with self._condition:
-			self._condition.notify();
+			self._condition.notify()
 
 
 	def sleep(self, seconds: Optional[int]=None) -> None:
@@ -66,7 +86,7 @@ class BaseThread(threading.Thread):
 		"""
 		with self._condition:
 			if(seconds is None):
-				warnings.warn(f"Thread: {self.name} has been indefinitely put to sleep");
+				warnings.warn(f"Thread: {self.name} has been indefinitely put to sleep")
 
 			self._condition.wait(seconds)
 
@@ -76,4 +96,4 @@ class BaseThread(threading.Thread):
 		SUMMARY: Wakes thread (condition from sleep).
 		"""
 		with self._condition:
-			self._condition.notify();
+			self._condition.notify()

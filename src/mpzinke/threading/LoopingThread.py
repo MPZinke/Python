@@ -27,10 +27,6 @@ class LoopingThread(BaseThread):
 
 
 	def __call__(self):
-		try:  # make it safe!!!
-			while(self._is_active):
-				self.action();
-				self.sleep(self.time());
-
-		except Exception as error:
-			print(error)
+		while(self._is_active):
+			self.action();
+			self.sleep(self.time());
