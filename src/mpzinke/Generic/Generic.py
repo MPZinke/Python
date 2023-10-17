@@ -58,19 +58,6 @@ class Generic:
 		return type(name, (cls,), {"__args__": __args__})
 
 
-	def get_or_set__args__(self, new__args__: Optional[Any]=None) -> Optional[Any]:
-		__args___name = self.__args__[0].__name__
-		if(new__args__ is None):
-			return getattr(self, f"_{__args___name}")
-
-		if(not isinstance(new__args__, self.__args__[0])):
-			value_type_str = type(new__args__).__name__
-			message = f"'__args__Option::{__args___name}' must be of type '{__args___name}' not '{value_type_str}'"
-			raise Exception(message);
-
-		setattr(self, f"_{__args___name}", new__args__)
-
-
 	# ———— WRAPPER ———— #
 
 	def __init__(self, function: callable):
@@ -78,7 +65,6 @@ class Generic:
 		self.__annotations__ = {arg: type for arg, type in function.__annotations__.items() if(arg != "__args__")}
 		self.__doc__ = function.__doc__
 		self.__name__ = function.__name__
-
 
 
 	def __call__(self, *args: list, **kwargs: dict):
