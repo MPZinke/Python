@@ -44,7 +44,10 @@ def convert_tokens_to_string(tokens: list[Token]) -> str:
 def run_macros(mappings_file_path: Path):
 	mappings: list[dict] = json.loads(read(mappings_file_path))
 	for mapping in mappings.values():
-		for script in mapping["Scripts"].values():
+		for key, script in mapping.items():
+			if(key == "Template"):
+				continue
+
 			typescript_file_path = os.path.join(mappings_file_path.parent, Path(script["Typescript"]))
 
 			print(typescript_file_path)
